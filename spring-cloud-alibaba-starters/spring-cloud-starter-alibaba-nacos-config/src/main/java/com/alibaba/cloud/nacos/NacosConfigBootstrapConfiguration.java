@@ -33,20 +33,18 @@ public class NacosConfigBootstrapConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public NacosConfigProperties nacosConfigProperties() {
-		return new NacosConfigProperties();
+		return new NacosConfigProperties(); // 配置中心属性配置类，对应Bootstrap.properties中的配置信息
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NacosConfigManager nacosConfigManager(
-			NacosConfigProperties nacosConfigProperties) {
-		return new NacosConfigManager(nacosConfigProperties);
+	public NacosConfigManager nacosConfigManager(NacosConfigProperties nacosConfigProperties) {
+		return new NacosConfigManager(nacosConfigProperties); // 持有NacosConfigProperties和ConfigService
 	}
 
 	@Bean
-	public NacosPropertySourceLocator nacosPropertySourceLocator(
-			NacosConfigManager nacosConfigManager) {
-		return new NacosPropertySourceLocator(nacosConfigManager);
+	public NacosPropertySourceLocator nacosPropertySourceLocator(NacosConfigManager nacosConfigManager) {
+		return new NacosPropertySourceLocator(nacosConfigManager); // 加载nacos配置中心的配置信息
 	}
 
 }

@@ -85,8 +85,7 @@ public class NacosConfigProperties {
 
 	private static final Pattern PATTERN = Pattern.compile("-(\\w)");
 
-	private static final Logger log = LoggerFactory
-			.getLogger(NacosConfigProperties.class);
+	private static final Logger log = LoggerFactory.getLogger(NacosConfigProperties.class);
 
 	@Autowired
 	@JsonIgnore
@@ -98,22 +97,18 @@ public class NacosConfigProperties {
 	}
 
 	private void overrideFromEnv() {
-		if (StringUtils.isEmpty(this.getServerAddr())) {
-			String serverAddr = environment
-					.resolvePlaceholders("${spring.cloud.nacos.config.server-addr:}");
+		if (StringUtils.isEmpty(this.getServerAddr())) { // 若注册中心地址为null
+			String serverAddr = environment.resolvePlaceholders("${spring.cloud.nacos.config.server-addr:}");
 			if (StringUtils.isEmpty(serverAddr)) {
-				serverAddr = environment.resolvePlaceholders(
-						"${spring.cloud.nacos.server-addr:localhost:8848}");
+				serverAddr = environment.resolvePlaceholders("${spring.cloud.nacos.server-addr:localhost:8848}");
 			}
 			this.setServerAddr(serverAddr);
 		}
 		if (StringUtils.isEmpty(this.getUsername())) {
-			this.setUsername(
-					environment.resolvePlaceholders("${spring.cloud.nacos.username:}"));
+			this.setUsername(environment.resolvePlaceholders("${spring.cloud.nacos.username:}"));
 		}
 		if (StringUtils.isEmpty(this.getPassword())) {
-			this.setPassword(
-					environment.resolvePlaceholders("${spring.cloud.nacos.password:}"));
+			this.setPassword(environment.resolvePlaceholders("${spring.cloud.nacos.password:}"));
 		}
 	}
 
@@ -237,7 +232,7 @@ public class NacosConfigProperties {
 	// todo sts support
 
 	public String getServerAddr() {
-		return serverAddr;
+		return serverAddr; // 注册中心地址
 	}
 
 	public void setServerAddr(String serverAddr) {
@@ -550,30 +545,24 @@ public class NacosConfigProperties {
 		properties.put(SECRET_KEY, Objects.toString(this.secretKey, ""));
 		properties.put(CLUSTER_NAME, Objects.toString(this.clusterName, ""));
 		properties.put(MAX_RETRY, Objects.toString(this.maxRetry, ""));
-		properties.put(CONFIG_LONG_POLL_TIMEOUT,
-				Objects.toString(this.configLongPollTimeout, ""));
+		properties.put(CONFIG_LONG_POLL_TIMEOUT, Objects.toString(this.configLongPollTimeout, ""));
 		properties.put(CONFIG_RETRY_TIME, Objects.toString(this.configRetryTime, ""));
-		properties.put(ENABLE_REMOTE_SYNC_CONFIG,
-				Objects.toString(this.enableRemoteSyncConfig, ""));
+		properties.put(ENABLE_REMOTE_SYNC_CONFIG, Objects.toString(this.enableRemoteSyncConfig, ""));
 		String endpoint = Objects.toString(this.endpoint, "");
 		if (endpoint.contains(":")) {
 			int index = endpoint.indexOf(":");
 			properties.put(ENDPOINT, endpoint.substring(0, index));
 			properties.put(ENDPOINT_PORT, endpoint.substring(index + 1));
-		}
-		else {
+		} else {
 			properties.put(ENDPOINT, endpoint);
 		}
-
 		enrichNacosConfigProperties(properties);
 		return properties;
 	}
 
 	private void enrichNacosConfigProperties(Properties nacosConfigProperties) {
-		Map<String, Object> properties = PropertySourcesUtils
-				.getSubProperties((ConfigurableEnvironment) environment, PREFIX);
-		properties.forEach((k, v) -> nacosConfigProperties.putIfAbsent(resolveKey(k),
-				String.valueOf(v)));
+		Map<String, Object> properties = PropertySourcesUtils.getSubProperties((ConfigurableEnvironment) environment, PREFIX);
+		properties.forEach((k, v) -> nacosConfigProperties.putIfAbsent(resolveKey(k), String.valueOf(v)));
 	}
 
 	private String resolveKey(String key) {
