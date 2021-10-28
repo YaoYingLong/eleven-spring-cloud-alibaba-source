@@ -68,39 +68,28 @@ public class NacosPropertySourceBuilder {
 	 * @param dataId Nacos dataId
 	 * @param group Nacos group
 	 */
-	NacosPropertySource build(String dataId, String group, String fileExtension,
-			boolean isRefreshable) {
-		List<PropertySource<?>> propertySources = loadNacosData(dataId, group,
-				fileExtension);
-		NacosPropertySource nacosPropertySource = new NacosPropertySource(propertySources,
-				group, dataId, new Date(), isRefreshable);
-		NacosPropertySourceRepository.collectNacosPropertySource(nacosPropertySource);
+	NacosPropertySource build(String dataId, String group, String fileExtension, boolean isRefreshable) {
+		List<PropertySource<?>> propertySources = loadNacosData(dataId, group, fileExtension);
+		NacosPropertySource nacosPropertySource = new NacosPropertySource(propertySources, group, dataId, new Date(), isRefreshable);
+		NacosPropertySourceRepository.collectNacosPropertySource(nacosPropertySource); // 将配置加载到缓存中
 		return nacosPropertySource;
 	}
 
-	private List<PropertySource<?>> loadNacosData(String dataId, String group,
-			String fileExtension) {
+	private List<PropertySource<?>> loadNacosData(String dataId, String group, String fileExtension) {
 		String data = null;
 		try {
 			data = configService.getConfig(dataId, group, timeout);
 			if (StringUtils.isEmpty(data)) {
-				log.warn(
-						"Ignore the empty nacos configuration and get it based on dataId[{}] & group[{}]",
-						dataId, group);
+				log.warn("Ignore the empty nacos configuration and get it based on dataId[{}] & group[{}]", dataId, group);
 				return Collections.emptyList();
 			}
 			if (log.isDebugEnabled()) {
-				log.debug(String.format(
-						"Loading nacos data, dataId: '%s', group: '%s', data: %s", dataId,
-						group, data));
+				log.debug(String.format("Loading nacos data, dataId: '%s', group: '%s', data: %s", dataId, group, data));
 			}
-			return NacosDataParserHandler.getInstance().parseNacosData(dataId, data,
-					fileExtension);
-		}
-		catch (NacosException e) {
+			return NacosDataParserHandler.getInstance().parseNacosData(dataId, data, fileExtension);
+		} catch (NacosException e) {
 			log.error("get data from Nacos error,dataId:{} ", dataId, e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error("parse data from Nacos error,dataId:{},data:{}", dataId, data, e);
 		}
 		return Collections.emptyList();

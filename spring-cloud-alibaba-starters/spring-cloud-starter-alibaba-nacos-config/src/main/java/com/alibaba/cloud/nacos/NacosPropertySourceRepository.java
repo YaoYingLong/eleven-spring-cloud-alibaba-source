@@ -63,21 +63,16 @@ public final class NacosPropertySourceRepository {
 		return NACOS_PROPERTY_SOURCE_REPOSITORY.get(dataId);
 	}
 
-	public static void collectNacosPropertySource(
-			NacosPropertySource nacosPropertySource) {
-		NACOS_PROPERTY_SOURCE_REPOSITORY
-				.putIfAbsent(getMapKey(nacosPropertySource.getDataId(),
-						nacosPropertySource.getGroup()), nacosPropertySource);
+	public static void collectNacosPropertySource(NacosPropertySource nacosPropertySource) {
+		NACOS_PROPERTY_SOURCE_REPOSITORY.putIfAbsent(getMapKey(nacosPropertySource.getDataId(), nacosPropertySource.getGroup()), nacosPropertySource);
 	}
 
-	public static NacosPropertySource getNacosPropertySource(String dataId,
-			String group) {
-		return NACOS_PROPERTY_SOURCE_REPOSITORY.get(getMapKey(dataId, group));
+	public static NacosPropertySource getNacosPropertySource(String dataId, String group) {
+		return NACOS_PROPERTY_SOURCE_REPOSITORY.get(getMapKey(dataId, group)); // 获取key为"dataId,group"的NacosPropertySource
 	}
 
 	public static String getMapKey(String dataId, String group) {
-		return String.join(NacosConfigProperties.COMMAS, String.valueOf(dataId),
-				String.valueOf(group));
+		return String.join(NacosConfigProperties.COMMAS, String.valueOf(dataId), String.valueOf(group));
 	}
 
 }
