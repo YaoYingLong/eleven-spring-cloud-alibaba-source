@@ -52,15 +52,12 @@ public class NacosConfigAutoConfiguration {
 	}
 
 	@Bean
-	public NacosConfigManager nacosConfigManager(
-			NacosConfigProperties nacosConfigProperties) {
+	public NacosConfigManager nacosConfigManager(NacosConfigProperties nacosConfigProperties) {
 		return new NacosConfigManager(nacosConfigProperties);
 	}
 
 	@Bean
-	public NacosContextRefresher nacosContextRefresher(
-			NacosConfigManager nacosConfigManager,
-			NacosRefreshHistory nacosRefreshHistory) {
+	public NacosContextRefresher nacosContextRefresher(NacosConfigManager nacosConfigManager, NacosRefreshHistory nacosRefreshHistory) {
 		// Consider that it is not necessary to be compatible with the previous
 		// configuration
 		// and use the new configuration if necessary.

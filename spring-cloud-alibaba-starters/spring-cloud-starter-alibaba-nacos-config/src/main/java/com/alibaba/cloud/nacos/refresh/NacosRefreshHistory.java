@@ -39,16 +39,14 @@ public class NacosRefreshHistory {
 
 	private final LinkedList<Record> records = new LinkedList<>();
 
-	private final ThreadLocal<DateFormat> DATE_FORMAT = ThreadLocal
-			.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+	private final ThreadLocal<DateFormat> DATE_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
 	private MessageDigest md;
 
 	public NacosRefreshHistory() {
 		try {
 			md = MessageDigest.getInstance("MD5");
-		}
-		catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			log.error("failed to initialize MessageDigest : ", e);
 		}
 	}
@@ -61,16 +59,14 @@ public class NacosRefreshHistory {
 	 */
 	@Deprecated
 	public void add(String dataId, String md5) {
-		records.addFirst(
-				new Record(DATE_FORMAT.get().format(new Date()), dataId, "", md5, null));
+		records.addFirst(new Record(DATE_FORMAT.get().format(new Date()), dataId, "", md5, null));
 		if (records.size() > MAX_SIZE) {
 			records.removeLast();
 		}
 	}
 
 	public void addRefreshRecord(String dataId, String group, String data) {
-		records.addFirst(new Record(DATE_FORMAT.get().format(new Date()), dataId, group,
-				md5(data), null));
+		records.addFirst(new Record(DATE_FORMAT.get().format(new Date()), dataId, group, md5(data), null));
 		if (records.size() > MAX_SIZE) {
 			records.removeLast();
 		}
@@ -106,8 +102,7 @@ public class NacosRefreshHistory {
 
 		private final String md5;
 
-		Record(String timestamp, String dataId, String group, String md5,
-				Map<String, Object> last) {
+		Record(String timestamp, String dataId, String group, String md5, Map<String, Object> last) {
 			this.timestamp = timestamp;
 			this.dataId = dataId;
 			this.group = group;
