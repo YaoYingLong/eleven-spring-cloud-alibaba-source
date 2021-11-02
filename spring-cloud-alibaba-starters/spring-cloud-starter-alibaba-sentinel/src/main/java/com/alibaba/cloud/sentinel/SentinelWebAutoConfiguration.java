@@ -50,8 +50,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableConfigurationProperties(SentinelProperties.class)
 public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(SentinelWebAutoConfiguration.class);
+	private static final Logger log = LoggerFactory.getLogger(SentinelWebAutoConfiguration.class);
 
 	@Autowired
 	private SentinelProperties properties;
@@ -69,24 +68,21 @@ public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
 	private Optional<SentinelWebInterceptor> sentinelWebInterceptorOptional;
 
 	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
+	public void addInterceptors(InterceptorRegistry registry) { // 容器启动时调用该方法
 		if (!sentinelWebInterceptorOptional.isPresent()) {
-			return;
+			return; // 获取SentinelWebInterceptor，若为空则直接返回
 		}
+		// filterConfig.getUrlPatterns()获取的结果默认置为/**通配符，即所有路径
 		SentinelProperties.Filter filterConfig = properties.getFilter();
 		registry.addInterceptor(sentinelWebInterceptorOptional.get())
 				.order(filterConfig.getOrder())
 				.addPathPatterns(filterConfig.getUrlPatterns());
-		log.info(
-				"[Sentinel Starter] register SentinelWebInterceptor with urlPatterns: {}.",
-				filterConfig.getUrlPatterns());
+		log.info("[Sentinel Starter] register SentinelWebInterceptor with urlPatterns: {}.", filterConfig.getUrlPatterns());
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.cloud.sentinel.filter.enabled",
-			matchIfMissing = true)
-	public SentinelWebInterceptor sentinelWebInterceptor(
-			SentinelWebMvcConfig sentinelWebMvcConfig) {
+	@ConditionalOnProperty(name = "spring.cloud.sentinel.filter.enabled", matchIfMissing = true)
+	public SentinelWebInterceptor sentinelWebInterceptor(SentinelWebMvcConfig sentinelWebMvcConfig) {
 		return new SentinelWebInterceptor(sentinelWebMvcConfig);
 	}
 
