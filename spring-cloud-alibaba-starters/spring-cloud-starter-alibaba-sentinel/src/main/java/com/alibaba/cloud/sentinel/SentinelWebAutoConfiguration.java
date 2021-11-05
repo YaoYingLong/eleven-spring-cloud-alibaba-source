@@ -72,11 +72,8 @@ public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
 		if (!sentinelWebInterceptorOptional.isPresent()) {
 			return; // 获取SentinelWebInterceptor，若为空则直接返回
 		}
-		// filterConfig.getUrlPatterns()获取的结果默认置为/**通配符，即所有路径
-		SentinelProperties.Filter filterConfig = properties.getFilter();
-		registry.addInterceptor(sentinelWebInterceptorOptional.get())
-				.order(filterConfig.getOrder())
-				.addPathPatterns(filterConfig.getUrlPatterns());
+		SentinelProperties.Filter filterConfig = properties.getFilter(); // filterConfig.getUrlPatterns()获取的结果默认置为/**通配符，即所有路径
+		registry.addInterceptor(sentinelWebInterceptorOptional.get()).order(filterConfig.getOrder()).addPathPatterns(filterConfig.getUrlPatterns());
 		log.info("[Sentinel Starter] register SentinelWebInterceptor with urlPatterns: {}.", filterConfig.getUrlPatterns());
 	}
 
@@ -87,28 +84,20 @@ public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.cloud.sentinel.filter.enabled",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.cloud.sentinel.filter.enabled", matchIfMissing = true)
 	public SentinelWebMvcConfig sentinelWebMvcConfig() {
 		SentinelWebMvcConfig sentinelWebMvcConfig = new SentinelWebMvcConfig();
 		sentinelWebMvcConfig.setHttpMethodSpecify(properties.getHttpMethodSpecify());
 		sentinelWebMvcConfig.setWebContextUnify(properties.getWebContextUnify());
-
 		if (blockExceptionHandlerOptional.isPresent()) {
-			blockExceptionHandlerOptional
-					.ifPresent(sentinelWebMvcConfig::setBlockExceptionHandler);
-		}
-		else {
+			blockExceptionHandlerOptional.ifPresent(sentinelWebMvcConfig::setBlockExceptionHandler);
+		} else {
 			if (StringUtils.hasText(properties.getBlockPage())) {
-				sentinelWebMvcConfig.setBlockExceptionHandler(((request, response,
-						e) -> response.sendRedirect(properties.getBlockPage())));
-			}
-			else {
-				sentinelWebMvcConfig
-						.setBlockExceptionHandler(new DefaultBlockExceptionHandler());
+				sentinelWebMvcConfig.setBlockExceptionHandler(((request, response, e) -> response.sendRedirect(properties.getBlockPage())));
+			} else {
+				sentinelWebMvcConfig.setBlockExceptionHandler(new DefaultBlockExceptionHandler());
 			}
 		}
-
 		urlCleanerOptional.ifPresent(sentinelWebMvcConfig::setUrlCleaner);
 		requestOriginParserOptional.ifPresent(sentinelWebMvcConfig::setOriginParser);
 		return sentinelWebMvcConfig;

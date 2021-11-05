@@ -47,30 +47,23 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 
 	private final RestTemplate restTemplate;
 
-	public SentinelProtectInterceptor(SentinelRestTemplate sentinelRestTemplate,
-			RestTemplate restTemplate) {
+	public SentinelProtectInterceptor(SentinelRestTemplate sentinelRestTemplate, RestTemplate restTemplate) {
 		this.sentinelRestTemplate = sentinelRestTemplate;
 		this.restTemplate = restTemplate;
 	}
 
 	@Override
-	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-			ClientHttpRequestExecution execution) throws IOException {
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 		URI uri = request.getURI();
-		String hostResource = request.getMethod().toString() + ":" + uri.getScheme()
-				+ "://" + uri.getHost()
-				+ (uri.getPort() == -1 ? "" : ":" + uri.getPort());
+		String hostResource = request.getMethod().toString() + ":" + uri.getScheme() + "://" + uri.getHost() + (uri.getPort() == -1 ? "" : ":" + uri.getPort());
 		String hostWithPathResource = hostResource + uri.getPath();
 		boolean entryWithPath = true;
 		if (hostResource.equals(hostWithPathResource)) {
 			entryWithPath = false;
 		}
-		Method urlCleanerMethod = BlockClassRegistry.lookupUrlCleaner(
-				sentinelRestTemplate.urlCleanerClass(),
-				sentinelRestTemplate.urlCleaner());
+		Method urlCleanerMethod = BlockClassRegistry.lookupUrlCleaner(sentinelRestTemplate.urlCleanerClass(), sentinelRestTemplate.urlCleaner());
 		if (urlCleanerMethod != null) {
-			hostWithPathResource = (String) methodInvoke(urlCleanerMethod,
-					hostWithPathResource);
+			hostWithPathResource = (String) methodInvoke(urlCleanerMethod, hostWithPathResource);
 		}
 
 		Entry hostEntry = null;
@@ -83,19 +76,15 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 			}
 			response = execution.execute(request, body);
 			if (this.restTemplate.getErrorHandler().hasError(response)) {
-				Tracer.trace(
-						new IllegalStateException("RestTemplate ErrorHandler has error"));
+				Tracer.trace(new IllegalStateException("RestTemplate ErrorHandler has error"));
 			}
-		}
-		catch (Throwable e) {
+		} catch (Throwable e) {
 			if (!BlockException.isBlockException(e)) {
 				Tracer.trace(e);
-			}
-			else {
+			} else {
 				return handleBlockException(request, body, execution, (BlockException) e);
 			}
-		}
-		finally {
+		} finally {
 			if (hostWithPathEntry != null) {
 				hostWithPathEntry.exit();
 			}
@@ -106,28 +95,22 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 		return response;
 	}
 
-	private ClientHttpResponse handleBlockException(HttpRequest request, byte[] body,
-			ClientHttpRequestExecution execution, BlockException ex) {
+	private ClientHttpResponse handleBlockException(HttpRequest request, byte[] body, ClientHttpRequestExecution execution, BlockException ex) {
 		Object[] args = new Object[] { request, body, execution, ex };
 		// handle degrade
 		if (isDegradeFailure(ex)) {
-			Method fallbackMethod = extractFallbackMethod(sentinelRestTemplate.fallback(),
-					sentinelRestTemplate.fallbackClass());
+			Method fallbackMethod = extractFallbackMethod(sentinelRestTemplate.fallback(), sentinelRestTemplate.fallbackClass());
 			if (fallbackMethod != null) {
 				return (ClientHttpResponse) methodInvoke(fallbackMethod, args);
-			}
-			else {
+			} else {
 				return new SentinelClientHttpResponse();
 			}
 		}
 		// handle flow
-		Method blockHandler = extractBlockHandlerMethod(
-				sentinelRestTemplate.blockHandler(),
-				sentinelRestTemplate.blockHandlerClass());
+		Method blockHandler = extractBlockHandlerMethod(sentinelRestTemplate.blockHandler(), sentinelRestTemplate.blockHandlerClass());
 		if (blockHandler != null) {
 			return (ClientHttpResponse) methodInvoke(blockHandler, args);
-		}
-		else {
+		} else {
 			return new SentinelClientHttpResponse();
 		}
 	}
@@ -135,11 +118,9 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 	private Object methodInvoke(Method method, Object... args) {
 		try {
 			return method.invoke(null, args);
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
-		}
-		catch (InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 	}

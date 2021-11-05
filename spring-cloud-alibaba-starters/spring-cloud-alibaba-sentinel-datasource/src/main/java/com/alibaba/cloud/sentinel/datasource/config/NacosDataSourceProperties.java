@@ -57,9 +57,7 @@ public class NacosDataSourceProperties extends AbstractDataSourceProperties {
 	@Override
 	public void preCheck(String dataSourceName) {
 		if (StringUtils.isEmpty(serverAddr)) {
-			serverAddr = this.getEnv().getProperty(
-					"spring.cloud.sentinel.datasource.nacos.server-addr",
-					"localhost:8848");
+			serverAddr = this.getEnv().getProperty("spring.cloud.sentinel.datasource.nacos.server-addr", "localhost:8848");
 		}
 	}
 

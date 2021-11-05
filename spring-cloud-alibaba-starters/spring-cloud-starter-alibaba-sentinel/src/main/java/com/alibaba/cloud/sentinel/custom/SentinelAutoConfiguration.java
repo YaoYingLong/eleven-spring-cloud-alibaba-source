@@ -105,8 +105,7 @@ public class SentinelAutoConfiguration {
 		if (StringUtils.hasText(properties.getBlockPage())) {
 			setConfig(BLOCK_PAGE_URL_CONF_KEY, properties.getBlockPage());
 		}
-		// earlier initialize
-		if (properties.isEager()) {
+		if (properties.isEager()) { // earlier initialize
 			InitExecutor.doInit(); // 调用SPI扩展进行初始化
 		}
 	}
@@ -114,7 +113,7 @@ public class SentinelAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SentinelResourceAspect sentinelResourceAspect() {
-		return new SentinelResourceAspect();
+		return new SentinelResourceAspect(); // 对标注@SentinelResource注解的方法进行增强
 	}
 
 	@Bean
@@ -122,7 +121,7 @@ public class SentinelAutoConfiguration {
 	@ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
 	@ConditionalOnProperty(name = "resttemplate.sentinel.enabled", havingValue = "true", matchIfMissing = true)
 	public SentinelBeanPostProcessor sentinelBeanPostProcessor(ApplicationContext applicationContext) {
-		return new SentinelBeanPostProcessor(applicationContext);
+		return new SentinelBeanPostProcessor(applicationContext); // 通过@SentinelRestTemplate注解对RestTemplate进行增强处理
 	}
 
 	@Bean
@@ -196,19 +195,14 @@ public class SentinelAutoConfiguration {
 			public XmlConverter xmlSystemConverter() {
 				return new XmlConverter(xmlMapper, SystemRule.class);
 			}
-
 			@Bean("sentinel-xml-authority-converter")
 			public XmlConverter xmlAuthorityConverter() {
 				return new XmlConverter(xmlMapper, AuthorityRule.class);
 			}
-
 			@Bean("sentinel-xml-param-flow-converter")
 			public XmlConverter xmlParamFlowConverter() {
 				return new XmlConverter(xmlMapper, ParamFlowRule.class);
 			}
-
 		}
-
 	}
-
 }

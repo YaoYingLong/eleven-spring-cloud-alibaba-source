@@ -73,7 +73,7 @@ public class NacosDataSourceFactoryBean implements FactoryBean<NacosDataSource> 
 		if (!StringUtils.isEmpty(this.password)) {
 			properties.setProperty(PropertyKeyConst.PASSWORD, this.password);
 		}
-		return new NacosDataSource(properties, groupId, dataId, converter);
+		return new NacosDataSource(properties, groupId, dataId, converter); // 创建NacosNacosDataSource
 	}
 
 	@Override
