@@ -36,8 +36,7 @@ public class SeataLoadBalancerFeignClient extends LoadBalancerFeignClient {
 			CachingSpringLoadBalancerFactory lbClientFactory,
 			SpringClientFactory clientFactory,
 			SeataFeignObjectWrapper seataFeignObjectWrapper) {
-		super((Client) seataFeignObjectWrapper.wrap(delegate), lbClientFactory,
-				clientFactory);
+		super((Client) seataFeignObjectWrapper.wrap(delegate), lbClientFactory, clientFactory);
 	}
 
 	@Override

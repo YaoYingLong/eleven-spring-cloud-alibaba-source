@@ -32,8 +32,7 @@ public class SeataFeignContext extends FeignContext {
 
 	private final FeignContext delegate;
 
-	SeataFeignContext(SeataFeignObjectWrapper seataFeignObjectWrapper,
-			FeignContext delegate) {
+	SeataFeignContext(SeataFeignObjectWrapper seataFeignObjectWrapper, FeignContext delegate) {
 		this.seataFeignObjectWrapper = seataFeignObjectWrapper;
 		this.delegate = delegate;
 	}
@@ -57,10 +56,8 @@ public class SeataFeignContext extends FeignContext {
 		for (Map.Entry<String, T> entry : instances.entrySet()) {
 			if (entry.getValue() instanceof Client) {
 				convertedInstances.put(entry.getKey(), entry.getValue());
-			}
-			else {
-				convertedInstances.put(entry.getKey(),
-						(T) this.seataFeignObjectWrapper.wrap(entry.getValue()));
+			} else {
+				convertedInstances.put(entry.getKey(), (T) this.seataFeignObjectWrapper.wrap(entry.getValue()));
 			}
 		}
 		return convertedInstances;

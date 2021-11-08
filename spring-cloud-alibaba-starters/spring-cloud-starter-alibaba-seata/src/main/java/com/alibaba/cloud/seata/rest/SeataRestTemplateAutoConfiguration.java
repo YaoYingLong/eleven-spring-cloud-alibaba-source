@@ -50,8 +50,7 @@ public class SeataRestTemplateAutoConfiguration {
 	public void init() {
 		if (this.restTemplates != null) {
 			for (RestTemplate restTemplate : restTemplates) {
-				List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>(
-						restTemplate.getInterceptors());
+				List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>(restTemplate.getInterceptors());
 				interceptors.add(this.seataRestTemplateInterceptor);
 				restTemplate.setInterceptors(interceptors);
 			}

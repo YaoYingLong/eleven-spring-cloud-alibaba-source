@@ -49,13 +49,11 @@ public class SeataFeignObjectWrapper {
 		if (bean instanceof Client && !(bean instanceof SeataFeignClient)) {
 			if (bean instanceof LoadBalancerFeignClient) {
 				LoadBalancerFeignClient client = ((LoadBalancerFeignClient) bean);
-				return new SeataLoadBalancerFeignClient(client.getDelegate(), factory(),
-						clientFactory(), this);
+				return new SeataLoadBalancerFeignClient(client.getDelegate(), factory(), clientFactory(), this);
 			}
 			if (bean instanceof FeignBlockingLoadBalancerClient) {
 				FeignBlockingLoadBalancerClient client = (FeignBlockingLoadBalancerClient) bean;
-				return new SeataFeignBlockingLoadBalancerClient(client.getDelegate(),
-						beanFactory.getBean(BlockingLoadBalancerClient.class), this);
+				return new SeataFeignBlockingLoadBalancerClient(client.getDelegate(), beanFactory.getBean(BlockingLoadBalancerClient.class), this);
 			}
 			return new SeataFeignClient(this.beanFactory, (Client) bean);
 		}
@@ -64,16 +62,14 @@ public class SeataFeignObjectWrapper {
 
 	CachingSpringLoadBalancerFactory factory() {
 		if (this.cachingSpringLoadBalancerFactory == null) {
-			this.cachingSpringLoadBalancerFactory = this.beanFactory
-					.getBean(CachingSpringLoadBalancerFactory.class);
+			this.cachingSpringLoadBalancerFactory = this.beanFactory.getBean(CachingSpringLoadBalancerFactory.class);
 		}
 		return this.cachingSpringLoadBalancerFactory;
 	}
 
 	SpringClientFactory clientFactory() {
 		if (this.springClientFactory == null) {
-			this.springClientFactory = this.beanFactory
-					.getBean(SpringClientFactory.class);
+			this.springClientFactory = this.beanFactory.getBean(SpringClientFactory.class);
 		}
 		return this.springClientFactory;
 	}
