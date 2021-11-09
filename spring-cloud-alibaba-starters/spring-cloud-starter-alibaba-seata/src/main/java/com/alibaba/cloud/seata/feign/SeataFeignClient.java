@@ -59,22 +59,16 @@ public class SeataFeignClient implements Client {
 	}
 
 	private Request getModifyRequest(Request request) {
-
 		String xid = RootContext.getXID();
-
 		if (StringUtils.isEmpty(xid)) {
 			return request;
 		}
-
 		Map<String, Collection<String>> headers = new HashMap<>(MAP_SIZE);
 		headers.putAll(request.headers());
-
 		List<String> seataXid = new ArrayList<>();
 		seataXid.add(xid);
 		headers.put(RootContext.KEY_XID, seataXid);
-
-		return Request.create(request.method(), request.url(), headers, request.body(),
-				request.charset());
+		return Request.create(request.method(), request.url(), headers, request.body(), request.charset());
 	}
 
 }

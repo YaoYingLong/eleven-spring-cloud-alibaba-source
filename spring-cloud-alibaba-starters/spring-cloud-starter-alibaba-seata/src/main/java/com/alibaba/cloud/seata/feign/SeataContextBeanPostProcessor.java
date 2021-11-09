@@ -35,25 +35,21 @@ public class SeataContextBeanPostProcessor implements BeanPostProcessor {
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof FeignContext && !(bean instanceof SeataFeignContext)) {
-			return new SeataFeignContext(getSeataFeignObjectWrapper(),
-					(FeignContext) bean);
+			return new SeataFeignContext(getSeataFeignObjectWrapper(), (FeignContext) bean);
 		}
 		return bean;
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}
 
 	private SeataFeignObjectWrapper getSeataFeignObjectWrapper() {
 		if (this.seataFeignObjectWrapper == null) {
-			this.seataFeignObjectWrapper = this.beanFactory
-					.getBean(SeataFeignObjectWrapper.class);
+			this.seataFeignObjectWrapper = this.beanFactory.getBean(SeataFeignObjectWrapper.class);
 		}
 		return this.seataFeignObjectWrapper;
 	}

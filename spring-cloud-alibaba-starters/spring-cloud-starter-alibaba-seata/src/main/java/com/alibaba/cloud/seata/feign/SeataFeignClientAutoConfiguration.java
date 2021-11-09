@@ -18,7 +18,6 @@ package com.alibaba.cloud.seata.feign;
 
 import feign.Client;
 import feign.Feign;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,48 +37,44 @@ import org.springframework.context.annotation.Scope;
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class SeataFeignClientAutoConfiguration {
 
-	@Bean
-	@Scope("prototype")
-	@ConditionalOnClass(name = "com.netflix.hystrix.HystrixCommand")
-	@ConditionalOnProperty(name = "feign.hystrix.enabled", havingValue = "true")
-	Feign.Builder feignHystrixBuilder(BeanFactory beanFactory) {
-		return SeataHystrixFeignBuilder.builder(beanFactory);
-	}
+    @Bean
+    @Scope("prototype")
+    @ConditionalOnClass(name = "com.netflix.hystrix.HystrixCommand")
+    @ConditionalOnProperty(name = "feign.hystrix.enabled", havingValue = "true")
+    Feign.Builder feignHystrixBuilder(BeanFactory beanFactory) {
+        return SeataHystrixFeignBuilder.builder(beanFactory);
+    }
 
-	@Bean
-	@Scope("prototype")
-	@ConditionalOnClass(name = "com.alibaba.csp.sentinel.SphU")
-	@ConditionalOnProperty(name = "feign.sentinel.enabled", havingValue = "true")
-	Feign.Builder feignSentinelBuilder(BeanFactory beanFactory) {
-		return SeataSentinelFeignBuilder.builder(beanFactory);
-	}
+    @Bean
+    @Scope("prototype")
+    @ConditionalOnClass(name = "com.alibaba.csp.sentinel.SphU")
+    @ConditionalOnProperty(name = "feign.sentinel.enabled", havingValue = "true")
+    Feign.Builder feignSentinelBuilder(BeanFactory beanFactory) {
+        return SeataSentinelFeignBuilder.builder(beanFactory);
+    }
 
-	@Bean
-	@ConditionalOnMissingBean
-	@Scope("prototype")
-	Feign.Builder feignBuilder(BeanFactory beanFactory) {
-		return SeataFeignBuilder.builder(beanFactory);
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    @Scope("prototype")
+    Feign.Builder feignBuilder(BeanFactory beanFactory) {
+        return SeataFeignBuilder.builder(beanFactory);
+    }
 
-	@Configuration(proxyBeanMethods = false)
-	protected static class FeignBeanPostProcessorConfiguration {
+    @Configuration(proxyBeanMethods = false)
+    protected static class FeignBeanPostProcessorConfiguration {
+        @Bean
+        SeataBeanPostProcessor seataBeanPostProcessor(SeataFeignObjectWrapper seataFeignObjectWrapper) {
+            return new SeataBeanPostProcessor(seataFeignObjectWrapper);
+        }
 
-		@Bean
-		SeataBeanPostProcessor seataBeanPostProcessor(SeataFeignObjectWrapper seataFeignObjectWrapper) {
-			return new SeataBeanPostProcessor(seataFeignObjectWrapper);
-		}
+        @Bean
+        SeataContextBeanPostProcessor seataContextBeanPostProcessor(BeanFactory beanFactory) {
+            return new SeataContextBeanPostProcessor(beanFactory);
+        }
 
-		@Bean
-		SeataContextBeanPostProcessor seataContextBeanPostProcessor(
-				BeanFactory beanFactory) {
-			return new SeataContextBeanPostProcessor(beanFactory);
-		}
-
-		@Bean
-		SeataFeignObjectWrapper seataFeignObjectWrapper(BeanFactory beanFactory) {
-			return new SeataFeignObjectWrapper(beanFactory);
-		}
-
-	}
-
+        @Bean
+        SeataFeignObjectWrapper seataFeignObjectWrapper(BeanFactory beanFactory) {
+            return new SeataFeignObjectWrapper(beanFactory);
+        }
+    }
 }
