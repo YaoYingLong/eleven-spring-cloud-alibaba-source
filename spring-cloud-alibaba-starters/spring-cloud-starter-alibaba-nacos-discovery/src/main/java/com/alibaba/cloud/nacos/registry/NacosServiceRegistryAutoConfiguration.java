@@ -41,16 +41,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 @ConditionalOnNacosDiscoveryEnabled
-@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled",
-		matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
 @AutoConfigureAfter({ AutoServiceRegistrationConfiguration.class,
 		AutoServiceRegistrationAutoConfiguration.class,
 		NacosDiscoveryAutoConfiguration.class })
 public class NacosServiceRegistryAutoConfiguration {
 
 	@Bean
-	public NacosServiceRegistry nacosServiceRegistry(
-			NacosDiscoveryProperties nacosDiscoveryProperties) {
+	public NacosServiceRegistry nacosServiceRegistry(NacosDiscoveryProperties nacosDiscoveryProperties) {
 		return new NacosServiceRegistry(nacosDiscoveryProperties);
 	}
 
@@ -66,12 +64,10 @@ public class NacosServiceRegistryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(AutoServiceRegistrationProperties.class)
-	public NacosAutoServiceRegistration nacosAutoServiceRegistration(
-			NacosServiceRegistry registry,
+	public NacosAutoServiceRegistration nacosAutoServiceRegistration(NacosServiceRegistry registry,
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties,
 			NacosRegistration registration) {
-		return new NacosAutoServiceRegistration(registry,
-				autoServiceRegistrationProperties, registration);
+		return new NacosAutoServiceRegistration(registry, autoServiceRegistrationProperties, registration);
 	}
 
 }

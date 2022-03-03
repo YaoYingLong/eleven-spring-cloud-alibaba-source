@@ -67,8 +67,7 @@ import static com.alibaba.nacos.api.PropertyKeyConst.USERNAME;
 @ConfigurationProperties("spring.cloud.nacos.discovery")
 public class NacosDiscoveryProperties {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(NacosDiscoveryProperties.class);
+	private static final Logger log = LoggerFactory.getLogger(NacosDiscoveryProperties.class);
 
 	/**
 	 * Prefix of {@link NacosDiscoveryProperties}.
@@ -221,12 +220,10 @@ public class NacosDiscoveryProperties {
 
 	@PostConstruct
 	public void init() throws Exception {
-
 		metadata.put(PreservedMetadataKeys.REGISTER_SOURCE, "SPRING_CLOUD");
 		if (secure) {
 			metadata.put("secure", "true");
 		}
-
 		serverAddr = Objects.toString(serverAddr, "");
 		if (serverAddr.endsWith("/")) {
 			serverAddr = serverAddr.substring(0, serverAddr.length() - 1);
@@ -234,42 +231,32 @@ public class NacosDiscoveryProperties {
 		endpoint = Objects.toString(endpoint, "");
 		namespace = Objects.toString(namespace, "");
 		logName = Objects.toString(logName, "");
-
 		if (StringUtils.isEmpty(ip)) {
 			// traversing network interfaces if didn't specify a interface
 			if (StringUtils.isEmpty(networkInterface)) {
 				ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
 			}
 			else {
-				NetworkInterface netInterface = NetworkInterface
-						.getByName(networkInterface);
+				NetworkInterface netInterface = NetworkInterface.getByName(networkInterface);
 				if (null == netInterface) {
-					throw new IllegalArgumentException(
-							"no such interface " + networkInterface);
+					throw new IllegalArgumentException("no such interface " + networkInterface);
 				}
-
 				Enumeration<InetAddress> inetAddress = netInterface.getInetAddresses();
 				while (inetAddress.hasMoreElements()) {
 					InetAddress currentAddress = inetAddress.nextElement();
-					if (currentAddress instanceof Inet4Address
-							&& !currentAddress.isLoopbackAddress()) {
+					if (currentAddress instanceof Inet4Address && !currentAddress.isLoopbackAddress()) {
 						ip = currentAddress.getHostAddress();
 						break;
 					}
 				}
-
 				if (StringUtils.isEmpty(ip)) {
-					throw new RuntimeException("cannot find available ip from"
-							+ " network interface " + networkInterface);
+					throw new RuntimeException("cannot find available ip from network interface " + networkInterface);
 				}
-
 			}
 		}
-
 		this.overrideFromEnv(environment);
 		if (nacosServiceManager.isNacosDiscoveryInfoChanged(this)) {
-			applicationEventPublisher
-					.publishEvent(new NacosDiscoveryInfoChangedEvent(this));
+			applicationEventPublisher.publishEvent(new NacosDiscoveryInfoChangedEvent(this));
 		}
 	}
 

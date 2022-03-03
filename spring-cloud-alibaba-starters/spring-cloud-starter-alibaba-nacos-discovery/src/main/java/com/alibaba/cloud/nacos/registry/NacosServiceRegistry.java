@@ -58,26 +58,20 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void register(Registration registration) {
-
 		if (StringUtils.isEmpty(registration.getServiceId())) {
 			log.warn("No service to register for nacos client...");
 			return;
 		}
-
+		// 若NacosNamingService不存在，则通过通过NacosDiscoveryProperties反射创建实例
 		NamingService namingService = namingService();
-		String serviceId = registration.getServiceId();
-		String group = nacosDiscoveryProperties.getGroup();
-
+		String serviceId = registration.getServiceId(); // 默认是应用名称
+		String group = nacosDiscoveryProperties.getGroup(); // 默认为DEFAULT_GROUP
 		Instance instance = getNacosInstanceFromRegistration(registration);
-
 		try {
 			namingService.registerInstance(serviceId, group, instance);
-			log.info("nacos registry, {} {} {}:{} register finished", group, serviceId,
-					instance.getIp(), instance.getPort());
-		}
-		catch (Exception e) {
-			log.error("nacos registry, {} register failed...{},", serviceId,
-					registration.toString(), e);
+			log.info("nacos registry, {} {} {}:{} register finished", group, serviceId, instance.getIp(), instance.getPort());
+		} catch (Exception e) {
+			log.error("nacos registry, {} register failed...{},", serviceId, registration.toString(), e);
 			// rethrow a RuntimeException if the registration is failed.
 			// issue : https://github.com/alibaba/spring-cloud-alibaba/issues/1132
 			rethrowRuntimeException(e);
@@ -86,27 +80,19 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void deregister(Registration registration) {
-
 		log.info("De-registering from Nacos Server now...");
-
 		if (StringUtils.isEmpty(registration.getServiceId())) {
 			log.warn("No dom to de-register for nacos client...");
 			return;
 		}
-
 		NamingService namingService = namingService();
 		String serviceId = registration.getServiceId();
 		String group = nacosDiscoveryProperties.getGroup();
-
 		try {
-			namingService.deregisterInstance(serviceId, group, registration.getHost(),
-					registration.getPort(), nacosDiscoveryProperties.getClusterName());
+			namingService.deregisterInstance(serviceId, group, registration.getHost(), registration.getPort(), nacosDiscoveryProperties.getClusterName());
+		} catch (Exception e) {
+			log.error("ERR_NACOS_DEREGISTER, de-register failed...{},", registration.toString(), e);
 		}
-		catch (Exception e) {
-			log.error("ERR_NACOS_DEREGISTER, de-register failed...{},",
-					registration.toString(), e);
-		}
-
 		log.info("De-registration finished.");
 	}
 
@@ -122,9 +108,7 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 
 	@Override
 	public void setStatus(Registration registration, String status) {
-
-		if (!STATUS_UP.equalsIgnoreCase(status)
-				&& !STATUS_DOWN.equalsIgnoreCase(status)) {
+		if (!STATUS_UP.equalsIgnoreCase(status) && !STATUS_DOWN.equalsIgnoreCase(status)) {
 			log.warn("can't support status {},please choose UP or DOWN", status);
 			return;
 		}
@@ -172,19 +156,18 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 
 	private Instance getNacosInstanceFromRegistration(Registration registration) {
 		Instance instance = new Instance();
-		instance.setIp(registration.getHost());
-		instance.setPort(registration.getPort());
-		instance.setWeight(nacosDiscoveryProperties.getWeight());
-		instance.setClusterName(nacosDiscoveryProperties.getClusterName());
-		instance.setEnabled(nacosDiscoveryProperties.isInstanceEnabled());
-		instance.setMetadata(registration.getMetadata());
-		instance.setEphemeral(nacosDiscoveryProperties.isEphemeral());
+		instance.setIp(registration.getHost()); // 当前实例应用机器IP
+		instance.setPort(registration.getPort()); // 当前实例应用端口
+		instance.setWeight(nacosDiscoveryProperties.getWeight());	// 权重默认为1.0
+		instance.setClusterName(nacosDiscoveryProperties.getClusterName());	 // 默认DEFAULT
+		instance.setEnabled(nacosDiscoveryProperties.isInstanceEnabled()); // 实例是否可用，默认true
+		instance.setMetadata(registration.getMetadata()); // 默认preserved.register.source = SPRING_CLOUD
+		instance.setEphemeral(nacosDiscoveryProperties.isEphemeral()); // 是否为临时实例即AP模式：默认true
 		return instance;
 	}
 
 	private NamingService namingService() {
-		return nacosServiceManager
-				.getNamingService(nacosDiscoveryProperties.getNacosProperties());
+		return nacosServiceManager.getNamingService(nacosDiscoveryProperties.getNacosProperties());
 	}
 
 }

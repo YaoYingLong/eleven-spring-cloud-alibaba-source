@@ -96,8 +96,7 @@ public class NacosServiceManager {
 	private NamingService createNewNamingService(Properties properties) {
 		try {
 			return createNamingService(properties);
-		}
-		catch (NacosException e) {
+		} catch (NacosException e) {
 			throw new RuntimeException(e);
 		}
 	}

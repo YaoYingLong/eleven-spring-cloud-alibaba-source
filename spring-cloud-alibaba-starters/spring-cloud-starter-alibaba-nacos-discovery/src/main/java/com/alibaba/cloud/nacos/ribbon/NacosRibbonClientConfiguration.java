@@ -41,11 +41,9 @@ public class NacosRibbonClientConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ServerList<?> ribbonServerList(IClientConfig config,
-			NacosDiscoveryProperties nacosDiscoveryProperties) {
+	public ServerList<?> ribbonServerList(IClientConfig config, NacosDiscoveryProperties nacosDiscoveryProperties) {
 		if (this.propertiesFactory.isSet(ServerList.class, config.getClientName())) {
-			ServerList serverList = this.propertiesFactory.get(ServerList.class, config,
-					config.getClientName());
+			ServerList serverList = this.propertiesFactory.get(ServerList.class, config, config.getClientName());
 			return serverList;
 		}
 		NacosServerList serverList = new NacosServerList(nacosDiscoveryProperties);
